@@ -94,7 +94,7 @@ def get_image_by_id(
         raise HTTPException(status_code=404, detail="Image not found")
     return image
 
-@router.get("/", response_model=list[ImageResponse])
+@router.get("", response_model=list[ImageResponse])
 def list_images(db: Session = Depends(get_db)):
     image_repo = SQLAlchemyImageRepository(db)
     return image_repo.get_all()
