@@ -5,8 +5,7 @@ on:
     branches:
       - develop
       - main
-      - feat/CICD
-
+      
 jobs:
   setup-docker-tag:
     runs-on: ubuntu-latest
