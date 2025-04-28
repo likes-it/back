@@ -16,6 +16,14 @@ class SQLAlchemyImageRepository(ImageRepository):
         if row:
             return Image(id=row.id, owner_id=row.owner_id, data_url=row.data_url, like_count=row.like_count)
         return None
+    
+    def _row_to_entity(self, row: ImageModel) -> Image:
+        return Image(
+            id=row.id,
+            owner_id=row.owner_id,
+            data_url=row.data_url,
+            like_count=row.like_count
+        )
 
     def save(self, image: Image) -> None:
         model = ImageModel(
@@ -40,6 +48,10 @@ class SQLAlchemyImageRepository(ImageRepository):
 
     def get_all(self) -> list[Image]:
         return self.session.query(ImageModel).all()
+    
+    def get_all_by_owner(self, owner_id: UUID)-> list[Image]:
+        rows = self.session.query(ImageModel).filter_by(owner_id=owner_id).all()
+        return [self._row_to_entity(row) for row in rows]
     
     def delete(self, image_id: UUID) -> None:
         image = self.session.query(ImageModel).filter_by(id=image_id).first()
