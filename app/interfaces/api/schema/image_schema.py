@@ -9,3 +9,12 @@ class ImageResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class ImageLikeResponse(BaseModel):
+    id: UUID
+    image_id: UUID
+    user_id: UUID
+    liked: bool
+
+    class Config:
+        orm_mode = True

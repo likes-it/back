@@ -3,8 +3,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi import File, UploadFile
 from sqlalchemy.orm import Session
 
-from app.domain.exceptions import NotFoundError, BadRequestError
-from app.domain.exceptions import InvalidImageFormatError
+from app.application.use_cases.get_my_images import GetMyImagesUseCase
+from app.application.use_cases.get_my_likes import GetMyLikesUseCase
+from app.domain.exceptions import NotFoundError, BadRequestError, InvalidImageFormatError
 
 
 from app.infrastructure.db.repositories.sqlalchemy_image_like_repository import SQLAlchemyImageLikeRepository
@@ -18,7 +19,7 @@ from app.application.use_cases.unlike_image import UnlikeImageUseCase
 from app.application.use_cases.delete_image import DeleteImageUseCase
 
 from app.interfaces.api.auth_dependency import get_current_user_id
-from app.interfaces.api.schema.image_schema import ImageResponse
+from app.interfaces.api.schema.image_schema import ImageResponse , ImageLikeResponse
 
 router = APIRouter(prefix="/images", tags=["images"])
 
@@ -118,3 +119,23 @@ def delete_image(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+    
+@router.get("/images/mine", response_model=list[ImageResponse])
+def get_mi_images(
+    db: Session = Depends(get_db),
+    user_id: UUID = Depends(get_current_user_id)
+):
+    image_repo = SQLAlchemyImageRepository(db)
+    use_case = GetMyImagesUseCase(image_repo)
+    images = use_case.execute(user_id=user_id)
+    return images
+
+@router.get("/likes/mine", response_model=list[ImageLikeResponse])
+def get_my_likes(
+    db: Session = Depends(get_db),
+    user_id: UUID = Depends(get_current_user_id)
+):
+    like_repo = SQLAlchemyImageLikeRepository(db)
+    use_case = GetMyLikesUseCase(like_repo)
+    likes = use_case.execute(user_id)
+    return likes
