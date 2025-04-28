@@ -58,4 +58,4 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64,linux/arm64/v8
-          tags: ghcr.io/baptiste-ferrand/hexagonal-api:${{ needs.setup-docker-tag.outputs.docker_tag || 'latest' }}
+          tags: ghcr.io/likes-it/api:${{ needs.setup-docker-tag.outputs.docker_tag || 'latest' }}
