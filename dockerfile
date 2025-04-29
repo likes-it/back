@@ -1,18 +1,26 @@
-# Utilise une image officielle Python
 FROM python:3.10-slim
 
-# Définir le répertoire de travail
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -Ls https://astral.sh/uv/install.sh | sh
+
+ENV PATH="/root/.local/bin:$PATH"
+
 WORKDIR /app
 
-# Copier les fichiers dans le conteneur
+COPY pyproject.toml uv.lock ./
+
+ENV UV_SYSTEM_PYTHON=1
+
+RUN uv sync --locked --no-install-project
+
 COPY . .
 
-# Installer les dépendances
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+RUN uv sync --locked
 
-# Exposer le port utilisé par Uvicorn
 EXPOSE 8000
 
-# Commande de lancement
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

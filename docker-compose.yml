@@ -11,20 +11,22 @@ services:
     ports:
       - "5432:5432"
 
-  # back:
-  #   image: ghcr.io/baptiste-ferrand/hexagonal-api:${ENV}
-  #   container_name: hexapi-app-${ENV}
-  #   restart: always
-  #   ports:
-  #     - "${NGINX_PORT}:8000"
-  #   environment:
-  #     SECRET_KEY: ${SECRET_KEY}
-  #     DATABASE_URL: ${DATABASE_URL}
-  #     MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-  #     MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-  #     MINIO_ENDPOINT: ${MINIO_ENDPOINT}
-  #     MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL}
-  #     MINIO_BUCKET: ${MINIO_BUCKET}
+  back:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: hexapi-app
+    restart: always
+    ports:
+      - "3000:8000"
+    environment:
+      SECRET_KEY: ${SECRET_KEY}
+      DATABASE_URL: ${DATABASE_URL}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT}
+      MINIO_PUBLIC_URL: ${MINIO_PUBLIC_URL}
+      MINIO_BUCKET: ${MINIO_BUCKET}
 
 volumes:
   db_data_preprod:
