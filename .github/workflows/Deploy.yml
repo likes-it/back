@@ -14,6 +14,10 @@ jobs:
       - name: Checkout du dépôt
         uses: actions/checkout@v4
 
+      - name: install toml
+        run: |
+          python -m pip install toml
+
       - name: Récupérer la version actuelle depuis pyproject.toml
         id: get_version
         run: |
