@@ -5,8 +5,57 @@ on:
     branches:
       - develop
       - main
-      
+      - 'feat/*'  
+
 jobs:
+  versioning:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du dépôt
+        uses: actions/checkout@v4
+
+      - name: Récupérer la version actuelle depuis pyproject.toml
+        id: get_version
+        run: |
+          VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
+      - name: Incrémenter la version en fonction des commits
+        id: increment_version
+        run: |
+          VERSION=${{ env.VERSION }}
+          # Récupérer les commits
+          COMMITS=$(git log --oneline origin/$GITHUB_REF)
+
+          # Incrémentation de la version en fonction du type de commit
+          for COMMIT in $COMMITS; do
+            case $COMMIT in
+              feat*)
+                VERSION=$(echo $VERSION | awk -F. -v OFS=. '{$2++; $3=0; print $0}')
+                ;;
+              fix*)
+                VERSION=$(echo $VERSION | awk -F. -v OFS=. '{$3++; print $0}')
+                ;;
+              *"BREAKING CHANGE"*)
+                VERSION=$(echo $VERSION | awk -F. -v OFS=. '{$1++; $2=0; $3=0; print $0}')
+                ;;
+              *)
+                # Pas de changement sur la version si aucun cas spécifique
+                ;;
+            esac
+          done
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Mettre à jour la version dans pyproject.toml
+        run: |
+          python -c "import toml; data = toml.load('pyproject.toml'); data['project']['version'] = '${{ env.VERSION }}'; toml.dump(data, open('pyproject.toml', 'w'))"
+
+      - name: Récupérer la version après modification
+        run: |
+          VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
   setup-docker-tag:
     runs-on: ubuntu-latest
     outputs:
@@ -20,11 +69,11 @@ jobs:
           elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
             echo "tag=pre-prod" >> $GITHUB_OUTPUT
           else
-            echo "tag=pre-prod" >> $GITHUB_OUTPUT
+            echo "tag=dev" >> $GITHUB_OUTPUT
           fi
 
   build-and-deploy-image:
-    needs: setup-docker-tag
+    needs: [versioning, setup-docker-tag]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -57,4 +106,7 @@ jobs:
           context: .
           push: true
           platforms: linux/amd64,linux/arm64/v8
-          tags: ghcr.io/likes-it/api:${{ needs.setup-docker-tag.outputs.docker_tag || 'latest' }}
+          tags: |
+            ghcr.io/likes-it/api:${{ needs.versioning.outputs.version }}
+            ghcr.io/likes-it/api:latest
+            ghcr.io/likes-it/api:${{ needs.setup-docker-tag.outputs.docker_tag }}
