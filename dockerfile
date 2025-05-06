@@ -15,8 +15,6 @@ COPY pyproject.toml uv.lock ./
 
 ENV UV_SYSTEM_PYTHON=1
 
-RUN uv sync --locked --no-install-project
-
 COPY . .
 
 RUN uv sync --locked
