@@ -57,10 +57,6 @@ jobs:
           esac
 
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-        
-      - name: Log version modifiée (ou non)
-        run: |
-          echo "La version après l'incrémentation est : ${{ env.VERSION }}"
 
       - name: Mettre à jour la version dans pyproject.toml
         id: version
