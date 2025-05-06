@@ -117,6 +117,6 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64/v8
           tags: |
-            ghcr.io/likes-it/api:${{ needs.versioning.outputs.version }}
-            ghcr.io/likes-it/api:latest
-            ghcr.io/likes-it/api:${{ needs.setup-docker-tag.outputs.docker_tag }}
+            ghcr.io/likes-it/back:${{ needs.versioning.outputs.version }}
+            ghcr.io/likes-it/back:latest
+            ghcr.io/likes-it/back:${{ needs.setup-docker-tag.outputs.docker_tag }}
