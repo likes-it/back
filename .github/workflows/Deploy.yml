@@ -60,6 +60,7 @@ jobs:
       - name: Mettre à jour la version dans pyproject.toml
         run: |
           python -c "import toml; data = toml.load('pyproject.toml'); data['project']['version'] = '${{ env.VERSION }}'; toml.dump(data, open('pyproject.toml', 'w'))"
+          echo "version=${{ env.VERSION }}" >> $GITHUB_OUTPUT
 
   setup-docker-tag:
     runs-on: ubuntu-latest
