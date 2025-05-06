@@ -11,6 +11,9 @@ on:
 jobs:
   versioning:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write 
     outputs:
       version: ${{ steps.version.outputs.version }}
     steps:
