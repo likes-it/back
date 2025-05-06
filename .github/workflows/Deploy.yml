@@ -65,6 +65,20 @@ jobs:
           python -c "import toml; data = toml.load('pyproject.toml'); data['project']['version'] = '${{ env.VERSION }}'; toml.dump(data, open('pyproject.toml', 'w'))"
           echo "version=${{ env.VERSION }}" >> $GITHUB_OUTPUT
 
+      - name: Commit and push the updated pyproject.toml
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          
+          # Ajouter les changements du fichier pyproject.toml
+          git add pyproject.toml
+          
+          # Committer les changements
+          git commit -m "Update version to ${{ steps.increment_version.outputs.version }}"
+          
+          # Pousser le commit vers la branche actuelle
+          git push origin ${{ github.ref }}
+
   setup-docker-tag:
     runs-on: ubuntu-latest
     outputs:
@@ -120,6 +134,6 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64/v8
           tags: |
-            ghcr.io/likes-it/back:${{ needs.versioning.outputs.version }}
-            ghcr.io/likes-it/back:latest
-            ghcr.io/likes-it/back:${{ needs.setup-docker-tag.outputs.docker_tag }}
+            ghcr.io/likes-it/api:${{ needs.versioning.outputs.version }}
+            ghcr.io/likes-it/api:latest
+            ghcr.io/likes-it/api:${{ needs.setup-docker-tag.outputs.docker_tag }}
