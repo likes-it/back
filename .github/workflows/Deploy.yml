@@ -11,6 +11,8 @@ on:
 jobs:
   versioning:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
       - name: Checkout du dépôt
         uses: actions/checkout@v4
@@ -58,6 +60,7 @@ jobs:
           echo "La version après l'incrémentation est : ${{ env.VERSION }}"
 
       - name: Mettre à jour la version dans pyproject.toml
+        id: version
         run: |
           python -c "import toml; data = toml.load('pyproject.toml'); data['project']['version'] = '${{ env.VERSION }}'; toml.dump(data, open('pyproject.toml', 'w'))"
           echo "version=${{ env.VERSION }}" >> $GITHUB_OUTPUT
