@@ -24,6 +24,10 @@ jobs:
         run: |
           VERSION=$(python -c "import toml; print(toml.load('pyproject.toml')['project']['version'])")
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
+      
+      - name: Log version actuelle
+        run: |
+          echo "La version actuelle extraite de pyproject.toml est : ${{ env.VERSION }}"
 
       - name: Incrémenter la version en fonction de la branche source de la PR
         id: increment_version
@@ -48,6 +52,10 @@ jobs:
           esac
 
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+        
+      - name: Log version modifiée (ou non)
+        run: |
+          echo "La version après l'incrémentation est : ${{ env.VERSION }}"
 
       - name: Mettre à jour la version dans pyproject.toml
         run: |
@@ -75,6 +83,10 @@ jobs:
     steps:
       - name: Checkout du dépôt
         uses: actions/checkout@v4
+
+      - name: Vérifier la version
+        run: |
+          echo "Version: ${{ needs.versioning.outputs.version }}"
 
       - name: Valider le tag généré
         run: |
