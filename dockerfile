@@ -17,7 +17,7 @@ ENV UV_SYSTEM_PYTHON=1
 
 COPY . .
 
-RUN uv sync --locked
+RUN uv sync
 
 EXPOSE 8000
 
