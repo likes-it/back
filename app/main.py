@@ -43,6 +43,7 @@ app.openapi = custom_openapi
 
 origins = [
     "http://localhost:5173",
+    "http://localhost:3000",
     "https://like-it-pre-prod.coak.fr",
     "https://like-it.coak.fr",
     "http://like-it-api-pre-prod.coak.fr"
