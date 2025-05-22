@@ -120,7 +120,7 @@ def delete_image(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
     
-@router.get("/images/mine", response_model=list[ImageResponse])
+@router.get("/mine", response_model=list[ImageResponse])
 def get_mi_images(
     db: Session = Depends(get_db),
     user_id: UUID = Depends(get_current_user_id)
