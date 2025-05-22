@@ -127,7 +127,7 @@ def get_mi_images(
 ):
     image_repo = SQLAlchemyImageRepository(db)
     use_case = GetMyImagesUseCase(image_repo)
-    images = use_case.execute(user_id=user_id)
+    images = use_case.execute(user_id)
     return images
 
 @router.get("/likes/mine", response_model=list[ImageLikeResponse])
