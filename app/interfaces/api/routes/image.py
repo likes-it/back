@@ -84,6 +84,16 @@ def upload_image(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
+@router.get("/mine", response_model=list[ImageResponse])
+def get_mi_images(
+    db: Session = Depends(get_db),
+    user_id: UUID = Depends(get_current_user_id)
+):
+    image_repo = SQLAlchemyImageRepository(db)
+    use_case = GetMyImagesUseCase(image_repo)
+    images = use_case.execute(user_id)
+    return images
+    
 @router.get("/{image_id}", response_model=ImageResponse)
 def get_image_by_id(
     image_id: UUID,
@@ -120,15 +130,6 @@ def delete_image(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
     
-@router.get("/mine", response_model=list[ImageResponse])
-def get_mi_images(
-    db: Session = Depends(get_db),
-    user_id: UUID = Depends(get_current_user_id)
-):
-    image_repo = SQLAlchemyImageRepository(db)
-    use_case = GetMyImagesUseCase(image_repo)
-    images = use_case.execute(user_id)
-    return images
 
 @router.get("/likes/mine", response_model=list[ImageLikeResponse])
 def get_my_likes(
